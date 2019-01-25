@@ -4,7 +4,6 @@ import {mount, shallow} from 'enzyme'
 import configureStore from 'redux-mock-store'
 import {Provider} from 'react-redux'
 import ConnectedApp, {App} from '../App'
-import ErrorMessage from '../components/ErrorMessage'
 
 jest.mock('axios')
 

@@ -2,6 +2,6 @@
 
 ```
 {
-  error: 'cannot retrieve rides - network error'
+  errorMessage: 'cannot retrieve rides - network error'
 }
 ```
