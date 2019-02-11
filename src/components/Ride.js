@@ -11,7 +11,7 @@ const styles = theme => ({
   card: {
     boxShadow: 'none',
     borderRadius: 'none',
-    borderBottom: 'thick solid cornflowerblue'
+    borderBottom: 'thin solid cornflowerblue'
   }
 })
 
@@ -58,8 +58,6 @@ class RideComponent extends Component {
           <IconButton
             id="more"
             onClick={this.handleExpandClick}
-            aria-expanded={this.state.expanded}
-            aria-label="Show more"
           >
             <Typography variant='caption'>
               More
@@ -74,8 +72,7 @@ class RideComponent extends Component {
             </IconButton>
             <IconButton disabled={this.props.disabled}
               id={`delete`}
-              onClick={this.handleDeleteClick}
-              aria-label="Delete">
+              onClick={this.handleDeleteClick}>
               <Delete/>
             </IconButton>
           </CardActions>
