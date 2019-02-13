@@ -10,3 +10,9 @@
     X-Xss-Protection = "1; mode=block; report=https://REPORT_URI_SUBDOMAIN_PLACEHOLDER.report-uri.com/r/d/xss/enforce"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+
+[[redirects]]
+  from = "/*"
+  to = "/"
+  status = 200
+  
