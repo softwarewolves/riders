@@ -92,6 +92,11 @@ class Header extends Component {
     this.hideMenu()
   }
 
+  myRides = event => {
+    this.props.myRides(event)
+    this.hideMenu()
+  }
+
   render() {
     const {classes} = this.props
     return (
@@ -103,6 +108,7 @@ class Header extends Component {
             </IconButton>
             <Menu open={this.state.showMenu} anchorEl={this.state.anchorEl} onClose={this.hideMenu}>
               <MenuItem onClick={this.addRide}>Add ride</MenuItem>
+              <MenuItem onClick={this.myRides} disabled={!Boolean(this.context)}>Select my rides</MenuItem>
             </Menu>
             <Typography variant="h6" color="inherit" className={classes.grow}>
               Ride Sharing

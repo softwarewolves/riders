@@ -180,13 +180,23 @@ export class App extends Component {
       this.closeAddRideDialog()
   }
 
+  myRides = event => {
+    this.setState({
+      rides: this.state.rides.filter(ride => ride.sub === this.state.user.profile.sub)
+    })
+  }
+
   render() {
     return (
       <div>
         <Route path='/' render={() =>
           <div>
             <AuthenticatedUserContext.Provider value={this.state.user}>
-              <Header userManager={this.userManager} addRide={this.openAddRideDialog}/>
+              <Header
+                userManager={this.userManager}
+                addRide={this.openAddRideDialog}
+                myRides={this.myRides}
+              />
               <AddRideDialog
                 open={this.state.addingRide}
                 handleClose={this.closeAddRideDialog}
