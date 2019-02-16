@@ -8,11 +8,10 @@ import App from '../App'
 
 jest.mock('axios')
 const middlewares = []
-const store = configureStore(middlewares)()
+const store = configureStore(middlewares)({errorMessage: '', rides: [], filter: ride => true})
 
 describe('App', () => {
 
-  let wrapper
   const ride1 = {from: "Antwerp", to: "Leuven", id: 'aaaaaaaa'}
   const ride2 = {from: 'a', to: 'b', id: 'bbbbbbbb'}
 
@@ -23,7 +22,7 @@ describe('App', () => {
   describe('when rides are retrieved', () => {
 
     beforeEach(() => {
-      wrapper = mount(
+      mount(
         <Provider store={store}>
           <MemoryRouter>
             <App/>
@@ -40,10 +39,12 @@ describe('App', () => {
     it('retrieves rides when it mounts', () => {
       expect(axios).toHaveBeenCalled()
     })
-    it('places the retrieved rides in the App state', () => {
-      wrapper = wrapper.find('App')
-      expect(wrapper.state('rides')).toContain(ride1)
-      expect(wrapper.state('rides')).toContain(ride2)
+    it('places the retrieved rides in the store', () => {
+      const actions = store.getActions()
+      expect(actions.length).toBe(1)
+      expect(actions[0].type).toBe('SET')
+      expect(actions[0].rides).toContain(ride1)
+      expect(actions[0].rides).toContain(ride2)
     })
   })
   describe('when rides cannot be retrieved', () => {
@@ -53,7 +54,7 @@ describe('App', () => {
 
     beforeEach(async () => {
       axios.mockRejectedValueOnce(errorMsg)
-      wrapper = await mount(
+      await mount(
         <Provider store={store}>
           <MemoryRouter>
             <App/>

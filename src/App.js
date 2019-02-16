@@ -1,29 +1,16 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
-import {Log, UserManager, WebStorageStateStore} from 'oidc-client'
+import {UserManager} from 'oidc-client'
 import {connect} from 'react-redux'
 import {withRouter, Route} from 'react-router-dom'
 import {Grid} from '@material-ui/core'
 import Rides from './components/Rides'
 import Header from './components/Header'
-import AddRideDialog from './components/AddRideDialog'
 import ErrorMessage from './components/ErrorMessage'
 import Callback from './components/Callback'
-import {notify} from './actions'
+import {notify, resetRides} from './actions'
 import AuthenticatedUserContext from './AuthenticatedUserContext'
-import RideSharingStore from './helpers/RideSharingStore'
-
-// const log = text => console.log(text)
-//
-// const logger = {
-//     debug: log,
-//     info: log,
-//     warn: log,
-//     error: log
-// }
-//
-// Log.logger = logger
 
 const config = {
   authority: process.env.REACT_APP_ISSUER,
@@ -44,7 +31,7 @@ const config = {
   // Cognito responds with a new access and ID token. No new refresh token is issued,
   // in spite of advice in the BCP.
   automaticSilentRenew: true,
-  userStore: new WebStorageStateStore({store: new RideSharingStore()})
+//  userStore: new WebStorageStateStore({store: new RideSharingStore()})
 }
 
 const listRidesConfig = {
@@ -92,7 +79,7 @@ export class App extends Component {
       //
       // Register for events.
       this.userManager.events.addSilentRenewError((event) => {
-        this.props.dispatch(notify(`cannot silently renew login - ${JSON.stringify(event)}`))
+        this.props.notify(`cannot silently renew login - ${JSON.stringify(event)}`)
       })
       this.userManager.events.addUserLoaded((event) => {
         this.setState({
@@ -104,15 +91,8 @@ export class App extends Component {
           user: undefined
         })
       })
-      this.userManager.events.addAccessTokenExpiring((event) => {
-        console.log('access token expiring - expecting silent renew to be triggered automatically')
-      })
-      this.userManager.events.addAccessTokenExpired((event) => {
-        console.log('access token expired - silent renew failed')
-      })
       this.state = {
-        rides: [],
-        addingRide: false
+        rides: []
       }
   }
 
@@ -120,72 +100,17 @@ export class App extends Component {
     axios(listRidesConfig)
       .then(
         (res) => {
-          this.setState({
-            rides: res.data
-          })
+          this.props.resetRides(res.data)
       })
       .catch(
         (err) => {
-          this.props.dispatch(notify(`cannot retrieve rides - ${err}`))
+          this.props.notify(`cannot retrieve rides - ${err}`)
       })
 
   componentDidMount() {
     this.listRides()
   }
-
-  openAddRideDialog = event => {
-    this.setState({
-      addingRide: true
-    })
-  }
-
-  closeAddRideDialog = event => {
-    this.setState({
-      addingRide: false
-    })
-  }
-
-  addRide = ride => {
-    const config = {
-      baseURL: `https://${process.env.REACT_APP_API_HOST}`,
-      url: `${process.env.REACT_APP_API_STAGE}/rides`,
-      method: 'post',
-      headers: {
-        'x-api-key': process.env.REACT_APP_API_KEY,
-        'Authorization': `Bearer ${this.state.user.access_token}`
-      },
-      data: ride
-    }
-    axios(config)
-      .then(
-        res => {
-          this.listRides()
-      })
-      .catch(
-        error => {
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            this.props.dispatch(notify(`cannot share ride - ${error.response.data.message}`))
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            this.props.dispatch(notify(`no response to share request`))
-          } else {
-            // Something happened in setting up the request that triggered an Error
-            this.props.dispatch(notify(`cannot share ride - ${error.message}`))
-          }
-      })
-      this.closeAddRideDialog()
-  }
-
-  myRides = event => {
-    this.setState({
-      rides: this.state.rides.filter(ride => ride.sub === this.state.user.profile.sub)
-    })
-  }
-
+  
   render() {
     return (
       <div>
@@ -195,15 +120,9 @@ export class App extends Component {
               <Header
                 userManager={this.userManager}
                 addRide={this.openAddRideDialog}
-                myRides={this.myRides}
-              />
-              <AddRideDialog
-                open={this.state.addingRide}
-                handleClose={this.closeAddRideDialog}
-                addRide={this.addRide}
               />
               <Grid container justify='center'>
-                <Rides rides={this.state.rides}/>
+                <Rides rides={this.props.rides.filter(this.props.filter)}/>
               </Grid>
             </AuthenticatedUserContext.Provider>
             <ErrorMessage/>
@@ -217,7 +136,20 @@ export class App extends Component {
 }
 
 App.propTypes = {
-  dispatch: PropTypes.func.isRequired
+  notify: PropTypes.func.isRequired,
+  resetRides: PropTypes.func.isRequired,
+  rides: PropTypes.array.isRequired,
+  filter: PropTypes.func.isRequired,
 }
 
-export default withRouter(connect()(App))
+const mapStateToProps = state => ({
+  rides: state.rides,
+  filter: state.filter
+})
+
+const mapDispatchToProps = {
+  notify,
+  resetRides
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App))

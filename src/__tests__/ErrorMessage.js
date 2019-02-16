@@ -61,7 +61,7 @@ describe('ErrorMessage container', () => {
         expect(wrapper.find('Snackbar')).toHaveProp('open', false)
       })
       it('wipes the error message', () => {
-        expect(wrapper.find(ErrorMessage)).toHaveProp('errorMessage', undefined)
+        expect(wrapper.find(ErrorMessage)).toHaveProp('errorMessage', '')
       })
     })
   })

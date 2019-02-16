@@ -4,6 +4,8 @@ import {shallow, mount} from 'enzyme'
 import {Provider} from 'react-redux'
 import configureStore from 'redux-mock-store'
 import ConnectedRide, {Ride} from '../components/Ride'
+import AuthenticatedUserContext from '../AuthenticatedUserContext'
+
 
 jest.mock('axios')
 
@@ -12,12 +14,14 @@ const errorMsg = 'access denied'
 const ride1 = {from: "Antwerp", to: "Leuven", id: "aaaaaa"}
 const ride2 = {from: 'a', to: 'b', id: "bbbbbbb"}
 
-axios.mockRejectedValue(errorMsg)
+axios.mockRejectedValue({response: {data: {message: errorMsg}}})
 
 describe('Ride', () => {
 
   beforeEach(async () => {
-    wrapper = await shallow(<Ride ride={ride1} dispatch={e => {}}/>)
+    wrapper = await shallow(
+        <Ride ride={ride1} notify={e => {}} remove={e => {}} update={e => {}}/>
+    )
   })
 
   it('start and endpoint can be set via props', () => {
@@ -36,12 +40,6 @@ describe('Ride', () => {
     wrapper.find('#more').simulate('click')
     expect(wrapper).toHaveState({expanded: true})
   })
-  it('calls the API when the delete button is pressed', () => {
-    wrapper.setProps({disabled: false})
-    wrapper = wrapper.dive()
-    wrapper.find('#delete').simulate('click')
-    expect(axios).toHaveBeenCalled()
-  })
 })
 
 describe('ConnectedRide', () => {
@@ -52,7 +50,9 @@ describe('ConnectedRide', () => {
   beforeEach(async () => {
     wrapper = await mount(
       <Provider store={store}>
-        <ConnectedRide ride={ride1}/>
+        <AuthenticatedUserContext.Provider value={{profile: {}}}>
+          <ConnectedRide ride={ride1}/>
+        </AuthenticatedUserContext.Provider>
       </Provider>
     )
   })
@@ -61,6 +61,12 @@ describe('ConnectedRide', () => {
     // Clear all instances and calls to constructor and all methods:
     axios.mockClear()
     store.clearActions()
+  })
+
+  it('calls the API when the delete button is pressed', () => {
+    wrapper.setProps({disabled: false})
+    wrapper.find('#delete').filter('IconButton').simulate('click')
+    expect(axios).toHaveBeenCalled()
   })
 
   it('notifies the store if a delete action returns an error', async () => {

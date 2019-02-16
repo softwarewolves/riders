@@ -1,11 +1,14 @@
 import React, {Component} from 'react'
 import axios from 'axios'
-import {Card, CardHeader, CardActions, IconButton, Collapse, Typography} from '@material-ui/core'
+import {Button, Card, CardHeader, CardActions, IconButton, Collapse, Typography} from '@material-ui/core'
 import {withStyles} from '@material-ui/core/styles'
 import {Delete ,ExpandMore, Edit} from '@material-ui/icons'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {notify} from '../actions'
+import {update, remove, notify} from '../actions'
+import AuthenticatedUserContext from '../AuthenticatedUserContext'
+import EditRideDialog from './EditRideDialog'
+import {safeContact} from '../helpers/sanitize'
 
 const styles = theme => ({
   card: {
@@ -17,10 +20,13 @@ const styles = theme => ({
 
 class RideComponent extends Component {
 
+  static contextType = AuthenticatedUserContext
+
   constructor(props) {
     super(props)
     this.state = {
-      expanded: false
+      expanded: false,
+      editing: false
     }
   }
 
@@ -36,14 +42,44 @@ class RideComponent extends Component {
       url: `rides/${this.props.ride.id}`,
       method: 'delete',
       headers: {
-        'x-api-key': process.env.REACT_APP_API_KEY
+        'x-api-key': process.env.REACT_APP_API_KEY,
+        'Authorization': `Bearer ${this.context.access_token}`
       }
     }
     axios(config)
       .then(res => {
+        this.props.remove(this.props.ride)
       })
       .catch(err => {
-        this.props.dispatch(notify(`cannot delete - ${err}`))
+        this.props.notify(`cannot delete - ${err.response.data.message}`)
+      })
+  }
+
+  updateRide = ({from, to, when, contact}) => {
+    const ride = {
+      from: from?from:this.props.ride.from,
+      to: to?to:this.props.ride.to,
+      when: when?when:this.props.ride.when,
+      contact: contact?contact:this.props.ride.contact,
+      id: this.props.ride.id,
+      sub: this.props.ride.sub
+    }
+    const config = {
+      baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
+      url: `rides/${this.props.ride.id}`,
+      method: 'put',
+      headers: {
+        'x-api-key': process.env.REACT_APP_API_KEY,
+        'Authorization': `Bearer ${this.context.access_token}`
+      },
+      data: ride
+    }
+    axios(config)
+      .then(res => {
+        this.props.update(ride)
+      })
+      .catch(err => {
+        this.props.notify(`cannot delete - ${err.response.data.message}`)
       })
   }
 
@@ -67,14 +103,31 @@ class RideComponent extends Component {
         </CardActions>
         <Collapse in={this.state.expanded}>
           <CardActions>
-            <IconButton disabled={this.props.disabled}>
+            <IconButton
+              disabled={!(this.context && this.context.profile && this.context.profile.sub === this.props.ride.sub)}
+              onClick={e => this.setState({
+                editing: true
+              })}>
               <Edit/>
             </IconButton>
-            <IconButton disabled={this.props.disabled}
+            <IconButton
+              disabled={!(this.context && this.context.profile && this.context.profile.sub === this.props.ride.sub)}
               id={`delete`}
               onClick={this.handleDeleteClick}>
               <Delete/>
             </IconButton>
+            {safeContact(this.props.ride.contact) &&
+              <Button href={this.props.ride.contact}>Contact</Button>
+            }
+            <EditRideDialog
+              open={this.state.editing}
+              operation='Update'
+              ride={this.props.ride}
+              handleClose={e => this.setState({
+                editing: false
+              })}
+              submitRide={this.updateRide}
+            />
           </CardActions>
         </Collapse>
       </Card>
@@ -88,9 +141,18 @@ RideComponent.propTypes = {
     to: PropTypes.string.isRequired
   }).isRequired,
   classes: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired
+  remove: PropTypes.func.isRequired,
+  notify: PropTypes.func.isRequired,
+  update: PropTypes.func.isRequired
+}
+
+const mapDispatchToProps = {
+  remove,
+  notify,
+  update
 }
 
 export const Ride = withStyles(styles)(RideComponent)
 
-export default connect()(Ride)
+
+export default connect(null, mapDispatchToProps)(Ride)

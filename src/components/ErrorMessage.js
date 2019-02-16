@@ -11,7 +11,7 @@ export class ErrorMessage extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      open: props.errorMessage?true:false,
+      open: Boolean(props.errorMessage)?true:false,
     }
   }
 
