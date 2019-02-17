@@ -11,8 +11,7 @@ import IconButton from '@material-ui/core/IconButton'
 import Menu from '@material-ui/core/Menu'
 import MenuIcon from '@material-ui/icons/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
-import {showAll, showMine, add} from '../actions'
-import AuthenticatedUserContext from '../AuthenticatedUserContext'
+import {showAll, showMine, notify, add} from '../actions'
 import EditRideDialog from './EditRideDialog'
 
 const styles = {
@@ -30,8 +29,6 @@ const styles = {
 
 class Header extends Component {
 
-  static contextType = AuthenticatedUserContext
-
   constructor(props) {
     super(props)
     this.state = {
@@ -41,29 +38,9 @@ class Header extends Component {
   }
 
   login = () => {
-    this.props.userManager.signinRedirect()
   }
 
   logout = () => {
-    // the most logical implementation would be
-    // this.props.userManager.signoutRedirect()
-    // unfortunately this does not work because the query parameters Cognito
-    // expects are not sent by oidc-client.
-    // Without arguments, as it is being called here, oidc-client sends the
-    // id_token in a parameter named id_token_hint.
-    // By judiciously adding parameters, it can be arranged to also send state and post_logout_redirect_uri.
-    // The latter could have been useful since Cognito expects a parameter `logout_uri` with the same semantics.
-    // It also expects the client_id. These will be supplied in the redirect below.
-    // But first, we remove the user from the store. If we do not do this, the app will continue
-    // to use stored tokens. Since we are self-contained tokens, these are not validated
-    // with the issuer and will continue to afford access.
-    this.props.userManager.removeUser()
-    // redirect the browser to the Cognito logout page. This will cause flicker.
-    // Using an iframe is a technique to avoid that, but this is not possible unfortunately
-    // since Cognito serves all its responses with X-Frame-Option DENY.
-    // In the response to the request below Cognito effectively cancels the browser session
-    // by setting the session cookie (cognito) to expire immediately.
-    window.location.href = `${process.env.REACT_APP_AS_ENDPOINTS}/logout?client_id=${process.env.REACT_APP_CLIENT_ID}&logout_uri=${window.origin}`
   }
 
   showMenu = event => {
@@ -93,15 +70,12 @@ class Header extends Component {
       method: 'post',
       headers: {
         'x-api-key': process.env.REACT_APP_API_KEY,
-        'Authorization': `Bearer ${this.context.access_token}`
       },
       data: ride
     }
     axios(config)
       .then(
         res => {
-          console.log(`received id ${res.data} for ride`)
-          ride.sub = this.context.profile.sub
           ride.id = res.data
           this.props.add(ride)
       })
@@ -176,7 +150,7 @@ class Header extends Component {
 
 Header.propTypes = {
   classes: PropTypes.object.isRequired,
-  userManager: PropTypes.object.isRequired,
+  userManager: PropTypes.object,
   showAll: PropTypes.func.isRequired,
   showMine: PropTypes.func.isRequired,
 }
@@ -184,6 +158,7 @@ Header.propTypes = {
 const mapDispatchToProps = {
   showAll,
   showMine,
+  notify,
   add
 }
 

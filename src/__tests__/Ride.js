@@ -41,38 +41,3 @@ describe('Ride', () => {
     expect(wrapper).toHaveState({expanded: true})
   })
 })
-
-describe('ConnectedRide', () => {
-
-  const middlewares = []
-  const store = configureStore(middlewares)()
-
-  beforeEach(async () => {
-    wrapper = await mount(
-      <Provider store={store}>
-        <AuthenticatedUserContext.Provider value={{profile: {}}}>
-          <ConnectedRide ride={ride1}/>
-        </AuthenticatedUserContext.Provider>
-      </Provider>
-    )
-  })
-
-  afterEach(() => {
-    // Clear all instances and calls to constructor and all methods:
-    axios.mockClear()
-    store.clearActions()
-  })
-
-  it('calls the API when the delete button is pressed', () => {
-    wrapper.setProps({disabled: false})
-    wrapper.find('#delete').filter('IconButton').simulate('click')
-    expect(axios).toHaveBeenCalled()
-  })
-
-  it('notifies the store if a delete action returns an error', async () => {
-    wrapper.setProps({disabled: false})
-    await wrapper.find(`#delete`).filter('IconButton').simulate('click')
-    const actions = await store.getActions()
-    expect(actions).toEqual([{type: 'NOTIFY_ERROR', errorMessage: `cannot delete - ${errorMsg}`}])
-  })
-})

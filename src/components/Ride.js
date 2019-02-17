@@ -6,7 +6,6 @@ import {Delete ,ExpandMore, Edit} from '@material-ui/icons'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {update, remove, notify} from '../actions'
-import AuthenticatedUserContext from '../AuthenticatedUserContext'
 import EditRideDialog from './EditRideDialog'
 import {safeContact} from '../helpers/sanitize'
 
@@ -19,8 +18,6 @@ const styles = theme => ({
 })
 
 class RideComponent extends Component {
-
-  static contextType = AuthenticatedUserContext
 
   constructor(props) {
     super(props)
@@ -37,20 +34,22 @@ class RideComponent extends Component {
   }
 
   handleDeleteClick = e => {
+    console.log('deleting')
     const config = {
       baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
       url: `rides/${this.props.ride.id}`,
       method: 'delete',
       headers: {
         'x-api-key': process.env.REACT_APP_API_KEY,
-        'Authorization': `Bearer ${this.context.access_token}`
       }
     }
     axios(config)
       .then(res => {
+        console.log('delete succeeded')
         this.props.remove(this.props.ride)
       })
       .catch(err => {
+        console.log('delete failed')
         this.props.notify(`cannot delete - ${err.response.data.message}`)
       })
   }
@@ -70,7 +69,6 @@ class RideComponent extends Component {
       method: 'put',
       headers: {
         'x-api-key': process.env.REACT_APP_API_KEY,
-        'Authorization': `Bearer ${this.context.access_token}`
       },
       data: ride
     }
