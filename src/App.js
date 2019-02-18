@@ -46,9 +46,9 @@ export class App extends Component {
               <Grid container justify='center'>
                 <Rides rides={this.props.rides.filter(this.props.filter)}/>
               </Grid>
-            <ErrorMessage/>
           </div>}
         />
+      <ErrorMessage/>
       </div>
     )}
 }
