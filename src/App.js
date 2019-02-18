@@ -20,13 +20,6 @@ const listRidesConfig = {
 
 export class App extends Component {
 
-  constructor(props) {
-      super(props)
-      this.state = {
-        rides: []
-      }
-  }
-
   listRides = () =>
     axios(listRidesConfig)
       .then(
