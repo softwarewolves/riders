@@ -113,7 +113,9 @@ class RideComponent extends Component {
               onClick={this.handleDeleteClick}>
               <Delete/>
             </IconButton>
-              <Button href={this.props.ride.contact}>Contact</Button>
+              {Boolean(this.props.ride.contact) &&
+                <Button href={this.props.ride.contact}>Contact</Button>
+              }
             <EditRideDialog
               open={this.state.editing}
               operation='Update'
