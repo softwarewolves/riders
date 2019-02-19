@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {DialogTitle, DialogContent, DialogActions, Dialog, TextField, Button} from '@material-ui/core'
-import {safeContact} from '../helpers/sanitize'
 
 class EditRideDialog extends Component {
 
@@ -28,7 +27,7 @@ class EditRideDialog extends Component {
       from: this.state.from,
       to: this.state.to,
       when: this.state.when,
-      contact: safeContact(this.state.contact)
+      contact: this.state.contact
     })
     this.props.handleClose()
   }

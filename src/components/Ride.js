@@ -7,7 +7,6 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {update, remove, notify} from '../actions'
 import EditRideDialog from './EditRideDialog'
-import {safeContact} from '../helpers/sanitize'
 
 const styles = theme => ({
   card: {
@@ -114,9 +113,7 @@ class RideComponent extends Component {
               onClick={this.handleDeleteClick}>
               <Delete/>
             </IconButton>
-            {safeContact(this.props.ride.contact) &&
               <Button href={this.props.ride.contact}>Contact</Button>
-            }
             <EditRideDialog
               open={this.state.editing}
               operation='Update'
