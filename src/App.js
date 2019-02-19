@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import axios from 'axios'
 import {connect} from 'react-redux'
-import {withRouter, Route} from 'react-router-dom'
+import {Route} from 'react-router-dom'
 import {Grid} from '@material-ui/core'
 import Rides from './components/Rides'
 import Header from './components/Header'
@@ -70,4 +70,4 @@ const mapDispatchToProps = {
   resetRides
 }
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App))
+export default connect(mapStateToProps, mapDispatchToProps)(App)
