@@ -81,13 +81,10 @@ class RideComponent extends Component {
   }
 
   isOwner = user => {
-    if (user && this.props.profileKey) {
-      try {
-        const profile = user.unseal(this.props.profileKey)
-        return profile.sub === this.props.ride.sub
-      } catch {
-        return false
-      }
+    if (user) {
+      return user.profile.sub === this.props.ride.sub
+    } else {
+      return false
     }
   }
 
