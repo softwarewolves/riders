@@ -33,7 +33,6 @@ class RideComponent extends Component {
   }
 
   handleDeleteClick = e => {
-    console.log('deleting')
     const config = {
       baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
       url: `rides/${this.props.ride.id}`,
@@ -44,11 +43,9 @@ class RideComponent extends Component {
     }
     axios(config)
       .then(res => {
-        console.log('delete succeeded')
         this.props.removeRide(this.props.ride)
       })
       .catch(err => {
-        console.log('delete failed')
         this.props.notify(`cannot delete - ${err.response.data.message}`)
       })
   }
