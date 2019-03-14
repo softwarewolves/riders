@@ -152,6 +152,10 @@ RideComponent.propTypes = {
   user: PropTypes.object
 }
 
+const mapStateToProps = state => ({
+  user: state.user
+})
+
 const mapDispatchToProps = {
   removeRide,
   notify,
@@ -161,4 +165,4 @@ const mapDispatchToProps = {
 export const Ride = withStyles(styles)(RideComponent)
 
 
-export default connect(null, mapDispatchToProps)(Ride)
+export default connect(mapStateToProps, mapDispatchToProps)(Ride)
