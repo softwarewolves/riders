@@ -5,7 +5,7 @@ import {withStyles} from '@material-ui/core/styles'
 import {Delete ,ExpandMore, Edit} from '@material-ui/icons'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {update, remove, notify} from '../actions'
+import {updateRide, removeRide, notify} from '../actions'
 import EditRideDialog from './EditRideDialog'
 
 const styles = theme => ({
@@ -45,7 +45,7 @@ class RideComponent extends Component {
     axios(config)
       .then(res => {
         console.log('delete succeeded')
-        this.props.remove(this.props.ride)
+        this.props.removeRide(this.props.ride)
       })
       .catch(err => {
         console.log('delete failed')
@@ -73,11 +73,22 @@ class RideComponent extends Component {
     }
     axios(config)
       .then(res => {
-        this.props.update(ride)
+        this.props.updateRide(ride)
       })
       .catch(err => {
         this.props.notify(`cannot update - ${err.response.data.message}`)
       })
+  }
+
+  isOwner = user => {
+    if (user && this.props.profileKey) {
+      try {
+        const profile = user.unseal(this.props.profileKey)
+        return profile.sub === this.props.ride.sub
+      } catch {
+        return false
+      }
+    }
   }
 
   render() {
@@ -101,14 +112,14 @@ class RideComponent extends Component {
         <Collapse in={this.state.expanded}>
           <CardActions>
             <IconButton
-              disabled={!(this.context && this.context.profile && this.context.profile.sub === this.props.ride.sub)}
+              disabled={!(this.isOwner(this.props.user))}
               onClick={e => this.setState({
                 editing: true
               })}>
               <Edit/>
             </IconButton>
             <IconButton
-              disabled={!(this.context && this.context.profile && this.context.profile.sub === this.props.ride.sub)}
+              disabled={!(this.isOwner(this.props.user))}
               id={`delete`}
               onClick={this.handleDeleteClick}>
               <Delete/>
@@ -138,15 +149,16 @@ RideComponent.propTypes = {
     to: PropTypes.string.isRequired
   }).isRequired,
   classes: PropTypes.object.isRequired,
-  remove: PropTypes.func.isRequired,
+  removeRide: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
-  update: PropTypes.func.isRequired
+  updateRide: PropTypes.func.isRequired,
+  user: PropTypes.object
 }
 
 const mapDispatchToProps = {
-  remove,
+  removeRide,
   notify,
-  update
+  updateRide
 }
 
 export const Ride = withStyles(styles)(RideComponent)

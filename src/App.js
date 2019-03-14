@@ -5,6 +5,7 @@ import {connect} from 'react-redux'
 import {Route} from 'react-router-dom'
 import {Grid} from '@material-ui/core'
 import Rides from './components/Rides'
+import Ride from './components/Ride'
 import Header from './components/Header'
 import ErrorMessage from './components/ErrorMessage'
 import {notify, resetRides} from './actions'
@@ -36,6 +37,14 @@ export class App extends Component {
   }
 
   render() {
+    const rides = this.props.rides?
+                    this.props.rides.filter(this.props.filter)
+                      .map(ride =>
+                            <Ride
+                              ride={ride}
+                              disabled={false}
+                            />)
+                    :undefined
     return (
       <div>
         <Route path='/' render={() =>
@@ -44,7 +53,7 @@ export class App extends Component {
                 addRide={this.openAddRideDialog}
               />
               <Grid container justify='center'>
-                <Rides rides={this.props.rides.filter(this.props.filter)}/>
+                <Rides rides={rides}/>
               </Grid>
           </div>}
         />

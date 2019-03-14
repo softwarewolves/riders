@@ -1,10 +1,7 @@
 import React from 'react'
 import axios from 'axios'
-import {shallow, mount} from 'enzyme'
-import {Provider} from 'react-redux'
-import configureStore from 'redux-mock-store'
-import ConnectedRide, {Ride} from '../components/Ride'
-import AuthenticatedUserContext from '../AuthenticatedUserContext'
+import {shallow} from 'enzyme'
+import {Ride} from '../components/Ride'
 
 
 jest.mock('axios')
@@ -20,7 +17,7 @@ describe('Ride', () => {
 
   beforeEach(async () => {
     wrapper = await shallow(
-        <Ride ride={ride1} notify={e => {}} remove={e => {}} update={e => {}}/>
+        <Ride ride={ride1} notify={e => {}} removeRide={e => {}} updateRide={e => {}}/>
     )
   })
 
