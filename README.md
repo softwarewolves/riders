@@ -13,11 +13,6 @@ If you only want to observe the behavior of this SPA, you can do so at https://r
 
 Node 8.x
 
-#### Windows only
-* MinGW with base MSYS package added to your PATH
-* `copy c:\MinGW\bin\mingw32-make.exe c:\MinGW\bin\make.exe`
-* `copy c:\MinGW\bin\mingw32-make.exe c:\MinGW\bin\make.exe`
-
 ### Installation
 
 ```
