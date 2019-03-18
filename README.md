@@ -1,13 +1,14 @@
 # Ride sharing
 
 This is an intentionally vulnerable browser-based React application for use in course work.
-Find and fix the vulnerabilities.
 
-This app consumes a backend API defined in [a companion, Ride Sharing API, project](https://github.com/JohanPeeters/rides-api). Some of this API requires access tokens. Currently, these are not being sent with the XHR requests, so some of the intended functionality fails - this needs fixing.
+This app consumes a backend API defined in [a companion, Ride Sharing API, project](https://github.com/JohanPeeters/rides-api). Feel free to set up your own serverless backend with this project. Alternatively, you can use my backend (no pun intended) - ask me for URLs, keys, client IDs and such.
+
+Some of this API requires access tokens. Currently, these are not being sent with the XHR requests, so some of the intended functionality fails - this needs fixing. Doing so is the main aim of this tutorial. The [Exercise](#Exercise) section below guides you through this step by step. Accompanying slides are also [available](https://docs.google.com/presentation/d/e/2PACX-1vT5km2T16hiKHG46G-sBz6G6xyH60vgJBUDK3QyhWqFMaccloSv_kFLE-wjG46iiiRYoTYh-UinvQhD/pub?start=false&loop=false&delayms=3000).
 
 ## Getting started
 
-If you only want to observe the behavior of this SPA, you can do so at https://ride-sharing.tk, a site hosted on Netlify. On the other hand, you can also set up your own experiments by cloning the repo and making changes. Here are the instructions for running the application locally.
+If you only want to observe the behavior of this SPA, you can do so at https://ride-sharing.ml, a site hosted on Netlify. On the other hand, you can also set up your own experiments by cloning the repo and making changes. Here are the instructions for running the application locally.
 
 ### Prerequisites
 
@@ -72,4 +73,61 @@ The API backend used by https://ride-sharing.ml is secured with an [AWS Cognito 
 * `DELETE /rides/{rideID}` - delete
 
 ## Exercise
-In order to access the protected methods in the backend API, you need to authenticate with the trusted authorization server and retrieve security tokens that will get you access. In line with the [most recent draft of the OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12), we advice to use the Authorization Code Grant with PKCE. As this is a sensitive operation, we also advice to use a well-established library for this. Unfortunately, at the time of writing, this narrows the choice down to one: [oidc-client-js](https://github.com/IdentityModel/oidc-client-js). The dependency is already included in `package.json` and `package-lock.json`, so it was installed by `npm install`. You can start using it right away.
+
+In order to access the protected methods in the backend API, you need to authenticate with the trusted authorization server and retrieve security tokens that will get you access. In line with the [most recent draft of the OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12), I advice to use the Authorization Code Grant with PKCE. As this is a sensitive operation, I also advice to use a well-established library for this. Unfortunately, at the time of writing, this narrows the choice down to one: [oidc-client-js](https://github.com/IdentityModel/oidc-client-js). The dependency is already included in `package.json` and `package-lock.json`, so it was installed by `npm install`. You can start using it right away.
+
+### Step 1 - authenticate with the authorization server
+
+`oidc-client`'s principal abstraction is `UserManager`. It has several methods that redirect the application to the authorization server. Choose judiciously.
+
+#### Acceptance criteria
+* The application opens the login page on the configured authorization server. You may want to create an account at this stage.
+* The authorization server redirects the browser to the application's redirect URI with the authorization code in a query parameter.
+
+### Step 2 - exchange code for token(s)
+
+We now need to get the code out of the URI's query parameter and send it in an XMLHttpRequest to the authorization server's token endpoint.
+
+Authorization code flow is less susceptible to token theft than the implicit flow because it does not expose the security tokens in URIs. However, the authorization code is also sensitive since it can be exchanged for security tokens. These are some of the measures suggested to mitigate the risk of code theft:
+* Only allow the code to be presented once. This is something that must be enforced by the authorization server. Unfortunately, Cognito, like many other authorization servers, does not enforce this.
+* PKCE. We are good here.
+* Remove the code from the browser's history - this is one of the acceptance criteria of this exercise, see below.
+
+For a more complete discussion, see the [OAuth 2.0 Threat Model and Security Considerations RFC](https://tools.ietf.org/html/rfc6819).
+
+#### Acceptance criteria
+* The authorization server sends back one or more security tokens.
+* The code is *not* in browser history.
+
+#### Hints
+* There is a, thus far unused, React component that may come in handy.
+* Leverage the React router - at the moment it is present in the application, but not really useful.
+
+### Step 3 - put the app into an authenticated state
+
+The app uses a redux store to keep track of global state. It already has a `user` reducer, but this is currently not being called. As it stands, authentication state is being injected into several components:
+* `Header` shows a different button depending on whether the user is logged in,
+* `Ride` decides whether the user can alter a ride based on ownership, and,
+* `RideSharingMenu` enables menu items based on the presence of a user.
+
+Place the user in the global redux state when the authorization server returns tokens.
+
+#### Acceptance criteria
+* The login button becomes a logout button when the user has authenticated.
+* Menu items are enabled.
+
+#### Hint
+`UserManager` raises events. A client can register callbacks for them.
+
+### Step 4 - log out
+
+The converse of logging in, logging out, turns out to be trickier. The application must recognize that the user has logged out, but so must the authorization server. In other words, the session with the authorization server must be invalidated.
+
+#### Acceptance criteria
+* The logout button makes place for a login button.
+* Menu items are disabled as appropriate.
+* When logging back in after log out, the user must re-authenticate.
+* No more tokens in local or session storage.
+
+#### Hint
+Have a look at the authorization server's (Cognito) [logout API documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html). Why would it be useful to call it?
