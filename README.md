@@ -130,4 +130,19 @@ The converse of logging in, logging out, turns out to be trickier. The applicati
 * No more tokens in local or session storage.
 
 #### Hint
-Have a look at the authorization server's (Cognito) [logout API documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html). Why would it be useful to call it?
+Have a look at the authorization server's (Cognito) [logout API documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html). Why would it be useful to call?
+
+### Step 5 - keep authentication state across page reloads
+
+#### Acceptance criteria
+When you logged in and refresh the page, you are still logged in.
+
+### Step 6 - send access token with create, update and delete calls
+
+#### Acceptance criteria
+* You can add a ride.
+* You can delete your own rides.
+* You can edit and update your own rides.
+
+#### Hint
+You obtained an access token when logging in, but does it contain the right scopes? I.e. does it bestow permission to make the API call?
