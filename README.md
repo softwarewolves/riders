@@ -2,7 +2,7 @@
 
 This is an intentionally vulnerable browser-based React application for use in course work.
 
-This app consumes a backend API defined in [a companion, Ride Sharing API, project](https://github.com/JohanPeeters/rides-api). Feel free to set up your own serverless backend with this project. Alternatively, you can use my backend (no pun intended) - ask me for URLs, keys, client IDs and such.
+It consumes a backend API defined in [a companion, Ride Sharing API, project](https://github.com/JohanPeeters/rides-api). Feel free to set up your own serverless backend with this project. Alternatively, you can use a ready-made backend - ask me for URLs, keys, client IDs and such.
 
 Some of this API requires access tokens. Currently, these are not being sent with the XHR requests, so some of the intended functionality fails - this needs fixing. Doing so is the main aim of this tutorial. The [Exercise](#Exercise) section below guides you through this step by step. Accompanying slides are also [available](https://docs.google.com/presentation/d/e/2PACX-1vT5km2T16hiKHG46G-sBz6G6xyH60vgJBUDK3QyhWqFMaccloSv_kFLE-wjG46iiiRYoTYh-UinvQhD/pub?start=false&loop=false&delayms=3000).
 
@@ -47,14 +47,14 @@ This will start a development server, open a tab in your default browser, and lo
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Apart from `npm start`, it includes the following scripts:
 
-* `npm test`: launches the test runner in interactive watch mode. It is recommended that you keep the tests running while you make changes to the project to make sure you do not unintentionally break things.
+* `npm test`: launches the test runner in interactive watch mode.
 * `npm run build` - you do not need this to run the application locally.
 * `npm run eject` - do not do this unless you know what you are doing.
 
 ### State shape
 
 The project uses [redux](https://redux.js.org/) to manage application state. Application state combines 4 reducers: `error`, `rides`, `filter` and `user`.
-Here is an example of the state of the application:
+Here is an example state:
 
 ```
 {
@@ -74,7 +74,7 @@ The API backend used by https://ride-sharing.ml is secured with an [AWS Cognito 
 
 ## Exercise
 
-In order to access the protected methods in the backend API, you need to authenticate with the trusted authorization server and retrieve security tokens that will get you access. In line with the [most recent draft of the OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12), I advice to use the Authorization Code Grant with PKCE. As this is a sensitive operation, I also advice to use a well-established library for this. Unfortunately, at the time of writing, this narrows the choice down to one: [oidc-client-js](https://github.com/IdentityModel/oidc-client-js). The dependency is already included in `package.json` and `package-lock.json`, so it was installed by `npm install`. You can start using it right away.
+In order to access the protected methods in the backend API, you need to authenticate with the trusted authorization server and retrieve security tokens that will give you access. In line with the [most recent draft of the OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12), I advice to use the Authorization Code Grant with PKCE. As this is a sensitive operation, I also advice to use a well-established library for this. Unfortunately, at the time of writing, this narrows the choice down to one: [oidc-client-js](https://github.com/IdentityModel/oidc-client-js). The dependency is already included in `package.json` and `package-lock.json`, so it was installed by `npm install`. You can start using it right away.
 
 ### Step 1 - authenticate with the authorization server
 
