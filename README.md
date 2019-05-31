@@ -74,7 +74,7 @@ The API backend used by https://ride-sharing.ml is secured with an [AWS Cognito 
 
 ## Exercise
 
-In order to access the protected methods in the backend API, you need to authenticate with the trusted authorization server and retrieve security tokens that will give you access. In line with the [most recent draft of the OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12), I advice to use the Authorization Code Grant with PKCE. As this is a sensitive operation, I also advice to use a well-established library for this. Unfortunately, at the time of writing, this narrows the choice down to one: [oidc-client-js](https://github.com/IdentityModel/oidc-client-js). The dependency is already included in `package.json` and `package-lock.json`, so it was installed by `npm install`. You can start using it right away.
+In order to access the protected methods in the backend API, you need to authenticate with the trusted authorization server and retrieve security tokens that will give you access. In line with the [most recent draft of the OAuth 2.0 Security Best Current Practice](https://tools.ietf.org/html/draft-ietf-oauth-security-topics-12), I advice to use the Authorization Code Grant with PKCE. As this is a sensitive operation, I also advice to use a well-established library for this. Unfortunately, at the time of writing, this narrows the choice down to very few. A dependency on [oidc-client-js](https://github.com/IdentityModel/oidc-client-js) is already included in `package.json` and `package-lock.json`, so it was installed by `npm install`. You can start using it right away.
 
 ### Step 1 - authenticate with the authorization server
 

@@ -49,9 +49,6 @@ describe('ErrorMessage container', () => {
     it('propagates the error message as props', () => {
       expect(wrapper.find(ErrorMessage)).toHaveProp('errorMessage', errorMsg)
     })
-    it('becomes visible', () => {
-      expect(wrapper.find(ErrorMessage)).toHaveState('open', true)
-    })
     describe('when the close button is pressed', () => {
       beforeEach(async () => {
         wrapper.find('Snackbar').prop('onClose')()
