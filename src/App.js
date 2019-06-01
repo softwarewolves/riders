@@ -12,27 +12,33 @@ import {notify, resetRides} from './actions'
 
 export const App = props => {
 
-  useEffect(() => {
-    const listRidesConfig = {
-      baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
-      url: 'rides',
-      method: 'get',
-      headers: {
-        'x-api-key': process.env.REACT_APP_API_KEY
+  const {resetRides, notify} = props
+
+  useEffect(
+    () => {
+      const listRidesConfig = {
+        baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
+        url: 'rides',
+        method: 'get',
+        headers: {
+          'x-api-key': process.env.REACT_APP_API_KEY
+        }
       }
-    }
-    const listRides = () =>
-      axios(listRidesConfig)
-        .then(
-          (res) => {
-            props.resetRides(res.data)
-        })
-        .catch(
-          (err) => {
-            props.notify(`cannot retrieve rides - ${err}`)
-        })
-    listRides()
-  })
+      const listRides = () =>
+        axios(listRidesConfig)
+          .then(
+            (res) => {
+              resetRides(res.data)
+          })
+          .catch(
+            (err) => {
+              notify(`cannot retrieve rides - ${err}`)
+          })
+      listRides()
+    },
+    // these should never change, so only run once 
+    [resetRides, notify]
+  )
 
   const rides = props.rides?
                   props.rides.filter(props.filter)
