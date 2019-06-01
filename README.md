@@ -4,7 +4,7 @@ This is an intentionally vulnerable browser-based React application for use in c
 
 It consumes a backend API defined in [a companion, Ride Sharing API, project](https://github.com/JohanPeeters/rides-api). Feel free to set up your own serverless backend with this project. Alternatively, you can use a ready-made backend - ask me for URLs, keys, client IDs and such.
 
-Some of this API requires access tokens. Currently, these are not being sent with the XHR requests, so some of the intended functionality fails - this needs fixing. Doing so is the main aim of this tutorial. The [Exercise](#Exercise) section below guides you through this step by step. Accompanying slides are also [available](https://docs.google.com/presentation/d/e/2PACX-1vT5km2T16hiKHG46G-sBz6G6xyH60vgJBUDK3QyhWqFMaccloSv_kFLE-wjG46iiiRYoTYh-UinvQhD/pub?start=false&loop=false&delayms=3000).
+Some of this API requires access tokens. Currently, these are not being sent with the XHR requests, so some of the intended functionality fails - this needs fixing. Doing so is the main aim of this tutorial. The [Exercise](#Exercise) section below guides you through this step by step.
 
 ## Getting started
 
@@ -78,11 +78,19 @@ In order to access the protected methods in the backend API, you need to authent
 
 ### Step 1 - authenticate with the authorization server
 
-`oidc-client`'s principal abstraction is `UserManager`. It has several methods that redirect the application to the authorization server. Choose judiciously.
+`oidc-client`'s principal abstraction is `UserManager`. It is documented in [the project's Github wiki](https://github.com/IdentityModel/oidc-client-js/wiki). Note that it has several methods that redirect the application to the authorization server. Choose judiciously.
 
 #### Acceptance criteria
 * The application opens the login page on the configured authorization server. You may want to create an account at this stage.
 * The authorization server redirects the browser to the application's redirect URI with the authorization code in a query parameter.
+* If authentication fails, an error message appears with the reason for the failure.
+
+#### Hints
+* Since you will be using PKCE, the authorization server needs to redirect to a page that will exchange the code for tokens.
+* Prior to the implementation of this requirement, the case for using React Router is not exactly compelling. Here you can make it shine.
+* The OAuth client communicates its choice of grant to the authorization server with the `response_type` query parameter. The default is `id_token`. This is *not* what we need here. So you have the choice between 2 alternatives: `code` or `token`. Only 1 of those leads to an implementation that meets the acceptance criteria. Which one?
+* For this part of the exercise, you can get away with the `scope` query parameter sent by default - this will need to be revisited at a later stage.
+* Error messages are being displayed by the `ErrorMessage` component based on the `error` state key. So, if authentication fails, call the `notify` Redux action creator to set error state.
 
 ### Step 2 - exchange code for token(s)
 
