@@ -84,14 +84,10 @@ In order to access the protected methods in the backend API, you need to authent
 #### Acceptance criteria
 * The application opens the login page on the configured authorization server. You may want to create an account at this stage.
 * The authorization server redirects the browser to the application's redirect URI with the authorization code in a query parameter.
-* If authentication fails, an error message appears with the reason for the failure.
 
 #### Hints
-* Since you will be using PKCE, the authorization server needs to redirect to a page that will exchange the code for tokens.
-* Prior to the implementation of this requirement, the case for using React Router is not exactly compelling. Here you can make it shine.
 * The OAuth client communicates its choice of grant to the authorization server with the `response_type` query parameter. The default is `id_token`. This is *not* what we need here. So you have the choice between 2 alternatives: `code` or `token`. Only 1 of those leads to an implementation that meets the acceptance criteria. Which one?
 * For this part of the exercise, you can get away with the `scope` query parameter sent by default - this will need to be revisited at a later stage.
-* Error messages are being displayed by the `ErrorMessage` component based on the `error` state key. So, if authentication fails, call the `notify` Redux action creator to set error state.
 
 ### Step 2 - exchange code for token(s)
 
@@ -107,10 +103,14 @@ For a more complete discussion, see the [OAuth 2.0 Threat Model and Security Con
 #### Acceptance criteria
 * The authorization server sends back one or more security tokens.
 * The code is *not* in browser history.
+* If the exchange fails, an error message appears with the reason for the failure.
 
 #### Hints
+* Since you will be using PKCE, the authorization server needs to redirect to a page that will exchange the code for tokens.
+* Prior to the implementation of this requirement, the case for using React Router is not exactly compelling. Here you can make it shine.
 * There is a, thus far unused, React component that may come in handy.
 * Leverage the React router - at the moment it is present in the application, but not really useful.
+* Error messages are being displayed by the `ErrorMessage` component based on the `error` state key. So, if authentication fails, call the `notify` Redux action creator to set error state.
 
 ### Step 3 - put the app into an authenticated state
 
