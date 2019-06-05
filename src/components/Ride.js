@@ -5,7 +5,7 @@ import {withStyles} from '@material-ui/core/styles'
 import {Delete ,ExpandMore, Edit} from '@material-ui/icons'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {updateRide, removeRide, notify} from '../actions'
+import {refresh, notify} from '../actions'
 import EditRideDialog from './EditRideDialog'
 
 const styles = theme => ({
@@ -36,7 +36,7 @@ const RideComponent = props => {
     }
     axios(config)
       .then(res => {
-        props.removeRide(props.ride)
+        props.refresh()
       })
       .catch(err => {
         props.notify(`cannot delete - ${err.response.data.message}`)
@@ -63,7 +63,7 @@ const RideComponent = props => {
     }
     axios(config)
       .then(res => {
-        props.updateRide(ride)
+        props.refresh()
       })
       .catch(err => {
         props.notify(`cannot update - ${err.response.data.message}`)
@@ -131,9 +131,8 @@ RideComponent.propTypes = {
     to: PropTypes.string.isRequired
   }).isRequired,
   classes: PropTypes.object.isRequired,
-  removeRide: PropTypes.func.isRequired,
+  refresh: PropTypes.func.isRequired,
   notify: PropTypes.func.isRequired,
-  updateRide: PropTypes.func.isRequired,
   user: PropTypes.object
 }
 
@@ -142,9 +141,8 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = {
-  removeRide,
-  notify,
-  updateRide
+  refresh,
+  notify
 }
 
 export const Ride = withStyles(styles)(RideComponent)

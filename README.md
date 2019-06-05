@@ -61,7 +61,8 @@ Here is an example state:
   error: 'cannot retrieve rides - network error',
   rides: [],
   filter: ride => true,
-  user: null
+  user: null,
+  fresh: true
 }
 ```
 

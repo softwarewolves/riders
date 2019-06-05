@@ -6,7 +6,7 @@ import Menu from '@material-ui/core/Menu'
 import MenuIcon from '@material-ui/icons/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import EditRideDialog from './EditRideDialog'
-import {showAll, showMine, notify, addRide} from '../actions'
+import {showAll, showMine, notify, refresh} from '../actions'
 import axios from 'axios'
 
 const styles = {
@@ -39,10 +39,7 @@ const RideSharingMenu = props => {
     axios(config)
       .then(
         res => {
-          console.log(`received id ${res.data} for ride`)
-          ride.sub = props.user.profile.sub
-          ride.id = res.data
-          props.addRide(ride)
+          props.refresh()
       })
       .catch(
         error => {
@@ -122,7 +119,7 @@ const mapDispatchToProps = {
   showAll,
   showMine,
   notify,
-  addRide
+  refresh
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(RideSharingMenu))

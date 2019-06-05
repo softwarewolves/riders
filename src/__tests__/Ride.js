@@ -17,7 +17,7 @@ describe('Ride', () => {
 
   beforeEach(async () => {
     wrapper = await shallow(
-        <Ride ride={ride1} notify={e => {}} removeRide={e => {}} updateRide={e => {}}/>
+        <Ride ride={ride1} notify={e => {}} removeRide={e => {}} updateRide={e => {}} refresh={() => {}}/>
     )
   })
 
