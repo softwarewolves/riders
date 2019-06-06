@@ -12,12 +12,8 @@ export const Callback = props => {
 }
 
 Callback.propTypes = {
-  dispatch: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
-  userManager: PropTypes.shape({
-    signinRedirectCallback: PropTypes.func.isRequired,
-    clearStaleState: PropTypes.func.isRequired
-  })
+  exchangeCodeForToken: PropTypes.func.isRequired
 }
 
 export default withRouter(Callback)
