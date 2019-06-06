@@ -126,7 +126,7 @@ Place the user in the global redux state when the authorization server returns t
 
 #### Hints
 * `UserManager` raises events. A client can register callbacks for them.
-* A `user` reducer has already been provided for the global redux state as well as the actions it accepts. If `user` global state is made available through `mapStateToProps` and an dispatch function through `mapDispatchToProps` similar to, for example, `rides` and `resetRides` respectively.  
+* A `user` reducer has already been provided for the global redux state as well as the actions it accepts. `user` global state can be made available through `mapStateToProps` and dispatch functions through `mapDispatchToProps` similar to, for example, `rides` and `resetRides` respectively.
 
 ### Step 4 - log out
 
