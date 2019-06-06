@@ -94,7 +94,7 @@ In order to access the protected methods in the backend API, you need to authent
 We now need to get the code out of the URI's query parameter and send it in an XMLHttpRequest to the authorization server's token endpoint.
 
 Authorization code flow is less susceptible to token theft than the implicit flow because it does not expose the security tokens in URIs. However, the authorization code is also sensitive since it can be exchanged for security tokens. These are some of the measures suggested to mitigate the risk of code theft:
-* Only allow the code to be presented once. This is something that must be enforced by the authorization server. Unfortunately, Cognito, like many other authorization servers, does not enforce this.
+* Only allow the code to be presented once. This is something that must be enforced by the authorization server. Unfortunately, Cognito, like many other authorization servers, fails to do so.
 * PKCE. We are good here.
 * Remove the code from the browser's history - this is one of the acceptance criteria of this exercise, see below.
 
@@ -109,7 +109,6 @@ For a more complete discussion, see the [OAuth 2.0 Threat Model and Security Con
 * Since you will be using PKCE, the authorization server needs to redirect to a page that will exchange the code for tokens.
 * Prior to the implementation of this requirement, the case for using React Router is not exactly compelling. Here you can make it shine.
 * There is a, thus far unused, React component that may come in handy.
-* Leverage the React router - at the moment it is present in the application, but not really useful.
 * Error messages are being displayed by the `ErrorMessage` component based on the `error` state key. So, if authentication fails, call the `notify` Redux action creator to set error state.
 
 ### Step 3 - put the app into an authenticated state
@@ -125,8 +124,9 @@ Place the user in the global redux state when the authorization server returns t
 * The login button becomes a logout button when the user has authenticated.
 * Menu items are enabled.
 
-#### Hint
-`UserManager` raises events. A client can register callbacks for them.
+#### Hints
+* `UserManager` raises events. A client can register callbacks for them.
+* A `user` reducer has already been provided for the global redux state as well as the actions it accepts. If `user` global state is made available through `mapStateToProps` and an dispatch function through `mapDispatchToProps` similar to, for example, `rides` and `resetRides` respectively.  
 
 ### Step 4 - log out
 
