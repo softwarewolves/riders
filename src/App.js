@@ -10,22 +10,20 @@ import Header from './components/Header'
 import ErrorMessage from './components/ErrorMessage'
 import {notify, resetRides, refreshing} from './actions'
 
-export const App = props => {
+const listRidesConfig = {
+  baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
+  url: 'rides',
+  method: 'get',
+  headers: {
+    'x-api-key': process.env.REACT_APP_API_KEY
+  }
+}
 
-  const {resetRides, notify, refreshing} = props
+export const App = ({resetRides, notify, refreshing, fresh, rides, filter}) => {
 
   useEffect(
     () => {
-      if (!props.fresh) {
-        refreshing()
-        const listRidesConfig = {
-          baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
-          url: 'rides',
-          method: 'get',
-          headers: {
-            'x-api-key': process.env.REACT_APP_API_KEY
-          }
-        }
+      if (!fresh) {
         const listRides = () =>
           axios(listRidesConfig)
             .then(
@@ -36,19 +34,21 @@ export const App = props => {
               (err) => {
                 notify(`cannot retrieve rides - ${err}`)
             })
+        refreshing()
         listRides()
       }
-    }
+    },
+    [fresh, resetRides, notify, refreshing]
   )
 
-  const rides = props.rides?
-                  props.rides.filter(props.filter)
-                    .map(ride =>
-                          <Ride
-                            ride={ride}
-                            disabled={false}
-                          />)
-                  :undefined
+  const rideList = rides?
+                    rides.filter(filter)
+                      .map(ride =>
+                            <Ride
+                              ride={ride}
+                              disabled={false}
+                            />)
+                    :undefined
 
   return (
     <div>
@@ -56,7 +56,7 @@ export const App = props => {
         <div>
             <Header/>
             <Grid container justify='center'>
-              <Rides rides={rides}/>
+              <Rides rides={rideList}/>
             </Grid>
         </div>}
       />
