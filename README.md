@@ -138,13 +138,18 @@ The converse of logging in, logging out, turns out to be trickier. The applicati
 * When logging back in after log out, the user must re-authenticate.
 * No more tokens in local or session storage.
 
-#### Hint
-Have a look at the authorization server's (Cognito) [logout API documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html). Why would it be useful to call?
+#### Hints
+* `UserManager` provides a method to remove the user from storage.
+* Have a look at the authorization server's (Cognito) [logout endpoint documentation](https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html). Why would it be useful to navigate to that page?
 
 ### Step 5 - keep authentication state across page reloads
 
 #### Acceptance criteria
 When you logged in and refresh the page, you are still logged in.
+
+#### Hints
+* In the previous step you used a `UserManager` method to remove the user from storage. To meet this requirement, you need the converse: load the user from storage. Chances are that there is a method for this too.
+* You may previously have registered a listener to a `userLoaded` event to handle the case where the user successfully authenticates. It would not be unreasonable to expect that this would also be raised when a user is loaded from storage. Apparently it is not. In other words, you need to take explicit action when the promise to load the user is fulfilled.
 
 ### Step 6 - send access token with create, update and delete calls
 
@@ -153,5 +158,12 @@ When you logged in and refresh the page, you are still logged in.
 * You can delete your own rides.
 * You can edit and update your own rides.
 
-#### Hint
-You obtained an access token when logging in, but does it contain the right scopes? I.e. does it bestow permission to make the API call?
+#### Hints
+* You obtained an access token when logging in, but does it contain the right scopes? I.e. does it bestow permission to make the API call?
+* Following 'custom scopes' are recognized in the backend (Cognito, API Gateway):
+  * `rides/create`
+  * `rides/update`
+  * `rides/delete`
+* The existing code relies on a `profile` field in the `user` object. This is created by `UserManager` based on the ID token. In order to receive an ID token, `openid` needs to be specified as a scope.
+* The `scope` query string parameter is a string containing one or more scopes separated by a space.
+* The API expects the access token in the `Authorization` header. It is preceded by `Bearer` followed by a space.
