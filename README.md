@@ -173,3 +173,7 @@ When you logged in and refresh the page, you are still logged in.
 * The existing code relies on a `profile` field in the `user` object. This is created by `UserManager` based on the ID token. In order to receive an ID token, `openid` needs to be specified as a scope.
 * The `scope` query string parameter is a string containing one or more scopes separated by a space.
 * The API expects the access token in the `Authorization` header. It is preceded by `Bearer` followed by a space.
+
+### Step 7 - obtain a new access token when the old one is about to expire (optional)
+
+Security people like short-lived tokens. UX people do not want the user to have to authenticate too often. In order to satisfy both, authorization servers are often configured to issue access and ID tokens with a shortish expiry time and to also issue refresh tokens. These refresh tokens are valid for longer and can be used to obtain new access and ID tokens - there is an endpoint for that. But you need not even know what that endpoint is. As you are now pretty accomplished with all things OAuth and OIDC, that is all the hints that you are going get!
