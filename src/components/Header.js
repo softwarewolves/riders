@@ -22,14 +22,13 @@ const styles = {
   },
 }
 
-const Header = props => {
+const Header = ({user, classes}) => {
 
   const isLoggedIn = () => (
-    Boolean(props.user)
+    Boolean(user)
   )
   const login = () => {}
   const logout = () => {}
-  const {classes} = props
   return (
     <div className={classes.root}>
       <AppBar position="static">
