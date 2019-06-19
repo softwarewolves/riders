@@ -112,9 +112,9 @@ For a more complete discussion, see the [OAuth 2.0 Threat Model and Security Con
 * If the exchange fails, an error message appears with the reason for the failure.
 
 #### Hints
-* Since you will be using PKCE, the authorization server needs to redirect to a page that will exchange the code for tokens.
-* Prior to the implementation of this requirement, the case for using React Router is not exactly compelling. Here you can make it shine.
+* Since you are using the authorization code grant, the authorization server needs to redirect to a page that exchanges the code for tokens.
 * There is a, thus far unused, React component that may come in handy.
+* Prior to the implementation of this requirement, the case for using React Router is not exactly compelling. Here you can make it shine.
 * Error messages are being displayed by the `ErrorMessage` component based on the `error` state key. So, if authentication fails, call the `notify` Redux action creator to set error state.
 
 ### Step 3 - put the app into an authenticated state
