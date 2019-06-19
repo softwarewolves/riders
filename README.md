@@ -88,6 +88,12 @@ In order to access the protected methods in the backend API, you need to authent
 #### Hints
 * The OAuth client communicates its choice of grant to the authorization server with the `response_type` query parameter. The default is `id_token`. This is *not* what we need here. So you have the choice between 2 alternatives: `code` or `token`. Only 1 of those leads to an implementation that meets the acceptance criteria. Which one?
 * For this part of the exercise, you can get away with the `scope` query parameter sent by default - this will need to be revisited at a later stage.
+* The authorization server accepts the following redirect URIs:
+   * http://localhost:3000,
+   * http://localhost:3000/callback,
+   * https://ride-sharing.ml/callback, and,
+   * https://ride-sharing.tk
+
 
 ### Step 2 - exchange code for token(s)
 
