@@ -16,7 +16,7 @@ const styles = theme => ({
   }
 })
 
-const RideComponent = props => {
+const RideComponent = ({ride, classes, refresh, notify, user}) => {
 
   const [expanded, setExpanded] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -28,7 +28,7 @@ const RideComponent = props => {
   const handleDeleteClick = e => {
     const config = {
       baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
-      url: `rides/${props.ride.id}`,
+      url: `rides/${ride.id}`,
       method: 'delete',
       headers: {
         'x-api-key': process.env.REACT_APP_API_KEY,
@@ -36,54 +36,53 @@ const RideComponent = props => {
     }
     axios(config)
       .then(res => {
-        props.refresh()
+        refresh()
       })
       .catch(err => {
-        props.notify(`cannot delete - ${err.response.data.message}`)
+        notify(`cannot delete - ${err.response.data.message}`)
       })
   }
 
-  const updateRide = ({from, to, when, contact}) => {
-    const ride = {
-      from: from?from:props.ride.from,
-      to: to?to:props.ride.to,
-      when: when?when:props.ride.when,
-      contact: contact?contact:props.ride.contact,
-      id: props.ride.id,
-      sub: props.ride.sub
+  const handleSubmit = ({from, to, when, contact}) => {
+    const updatedRide = {
+      from: from?from:ride.from,
+      to: to?to:ride.to,
+      when: when?when:ride.when,
+      contact: contact?contact:ride.contact,
+      id: ride.id,
+      sub: ride.sub
     }
     const config = {
       baseURL: `https://${process.env.REACT_APP_API_HOST}/${process.env.REACT_APP_API_STAGE}`,
-      url: `rides/${props.ride.id}`,
+      url: `rides/${updatedRide.id}`,
       method: 'put',
       headers: {
         'x-api-key': process.env.REACT_APP_API_KEY,
       },
-      data: ride
+      data: updatedRide
     }
     axios(config)
       .then(res => {
-        props.refresh()
+        refresh()
       })
       .catch(err => {
-        props.notify(`cannot update - ${err.response.data.message}`)
+        notify(`cannot update - ${err.response.data.message}`)
       })
   }
 
   const isOwner = user => {
     if (user) {
-      return user.profile.sub === props.ride.sub
+      return user.profile.sub === ride.sub
     } else {
       return false
     }
   }
 
-  const {classes} = props
   return (
     <Card className={classes.card}>
       <CardHeader
-        title={`${props.ride.from} to ${props.ride.to}`}
-        subheader={props.ride.when}/>
+        title={`${ride.from} to ${ride.to}`}
+        subheader={ride.when}/>
       <CardActions>
         <IconButton
           id="more"
@@ -98,25 +97,25 @@ const RideComponent = props => {
       <Collapse in={expanded}>
         <CardActions>
           <IconButton
-            disabled={!(isOwner(props.user))}
+            disabled={!(isOwner(user))}
             onClick={e => setEditing(true)}>
             <Edit/>
           </IconButton>
           <IconButton
-            disabled={!(isOwner(props.user))}
+            disabled={!(isOwner(user))}
             id={`delete`}
             onClick={handleDeleteClick}>
             <Delete/>
           </IconButton>
-            {Boolean(props.ride.contact) &&
-              <Button href={props.ride.contact}>Contact</Button>
+            {Boolean(ride.contact) &&
+              <Button href={ride.contact}>Contact</Button>
             }
           <EditRideDialog
             open={editing}
             operation='Update'
-            ride={props.ride}
+            ride={ride}
             handleClose={e => setEditing(false)}
-            submitRide={updateRide}
+            submitRide={handleSubmit}
           />
         </CardActions>
       </Collapse>
