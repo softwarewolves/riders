@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import PropTypes from 'prop-types'
 import {DialogTitle, DialogContent, DialogActions, Dialog, TextField, Button} from '@material-ui/core'
 
-const EditRideDialog = props => {
+const EditRideDialog = ({open, operation, handleClose, submitRide, ride}) => {
 
   const ensure2Digits = number => {
     return ('0' + number).slice(-2)
@@ -16,44 +16,44 @@ const EditRideDialog = props => {
     setValues(values => ({...values, [name]: value}))
   }
 
-  const submitRide = event => {
-    props.submitRide(values)
-    props.handleClose()
+  const handleSubmit = event => {
+    submitRide(values)
+    handleClose()
   }
-  
+
   return (
-    <Dialog open={props.open} onClose={props.handleClose}>
-      <DialogTitle>{props.operation} Ride</DialogTitle>
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle>{operation} Ride</DialogTitle>
       <DialogContent>
         <TextField
           name='from'
           onChange={handleChange}
           label="From"
-          defaultValue={props.ride?props.ride.from:''}/>
+          defaultValue={ride?ride.from:''}/>
         <TextField
           name='to'
           onChange={handleChange}
-          defaultValue={props.ride?props.ride.to:''}
+          defaultValue={ride?ride.to:''}
           label="To"/>
         <TextField
           name='when'
           onChange={handleChange}
           type='datetime-local'
-          defaultValue={props.ride?props.ride.when:tomorrow}
+          defaultValue={ride?ride.when:tomorrow}
           label="When"/>
         <TextField
           name='contact'
           onChange={handleChange}
           type='url'
-          defaultValue={props.ride?props.ride.contact:''}
+          defaultValue={ride?ride.contact:''}
           label="Contact"/>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose} color="primary">
+        <Button onClick={handleClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={submitRide} color="primary">
-          {props.operation}
+        <Button onClick={handleSubmit} color="primary">
+          {operation}
         </Button>
       </DialogActions>
     </Dialog>
